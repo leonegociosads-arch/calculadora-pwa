@@ -1,5 +1,6 @@
 import { Calculator, Sigma, ArrowLeftRight, Music } from "lucide-react";
 import { AppTile } from "@/components/home/AppTile";
+import { AuthStatus } from "@/components/auth/AuthStatus";
 
 const features = [
   { title: "Calculadora", href: "/calculadora", icon: Calculator },
@@ -11,11 +12,14 @@ const features = [
 export default function Home() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col gap-6 px-4 py-8">
-      <header>
-        <h1 className="text-2xl font-bold text-neutral-100">Calculex</h1>
-        <p className="text-sm text-neutral-400">
-          Escolha uma ferramenta para começar
-        </p>
+      <header className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-100">Calculex</h1>
+          <p className="text-sm text-neutral-400">
+            Escolha uma ferramenta para começar
+          </p>
+        </div>
+        <AuthStatus />
       </header>
       <div className="grid grid-cols-2 gap-4">
         {features.map((feature) => (
