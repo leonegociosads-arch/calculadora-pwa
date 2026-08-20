@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Display } from "@/components/calculator/Display";
+import { UnitScreen } from "./UnitScreen";
+import { DeviceShell } from "@/components/ui/DeviceShell";
 import { getConverter } from "@/lib/converters/registry";
+import { sanitizeNumericInput } from "@/lib/sanitizeNumericInput";
 import type { UnitOption } from "@/lib/converters/types";
 
 interface UnitConverterProps {
@@ -35,48 +37,55 @@ function UnitConverterFields({ units, convert }: UnitConverterFieldsProps) {
     : convert(numericValue, fromUnit, toUnit);
 
   return (
-    <div className="flex flex-col gap-4">
+    <DeviceShell label="UTIL · CONV" sublabel="MULTI">
       <div className="flex flex-col gap-2">
-        <label className="text-sm text-neutral-500" htmlFor="converter-value">
+        <label className="text-sm text-neutral-400" htmlFor="converter-value">
           Valor
         </label>
         <input
           id="converter-value"
-          type="number"
+          type="text"
           inputMode="decimal"
           value={inputValue}
-          onChange={(event) => setInputValue(event.target.value)}
-          className="rounded-2xl border border-neutral-200 px-4 py-3 text-lg"
+          onChange={(event) => setInputValue(sanitizeNumericInput(event.target.value))}
+          className="rounded-2xl border border-neutral-800 bg-neutral-900 px-4 py-3 text-lg text-neutral-100"
         />
       </div>
 
-      <div className="flex items-center gap-3">
-        <select
-          value={fromUnit}
-          onChange={(event) => setFromUnit(event.target.value)}
-          className="flex-1 rounded-2xl border border-neutral-200 px-3 py-3 text-sm"
-        >
-          {units.map((unit) => (
-            <option key={unit.value} value={unit.value}>
-              {unit.label}
-            </option>
-          ))}
-        </select>
-        <span className="text-neutral-400">→</span>
-        <select
-          value={toUnit}
-          onChange={(event) => setToUnit(event.target.value)}
-          className="flex-1 rounded-2xl border border-neutral-200 px-3 py-3 text-sm"
-        >
-          {units.map((unit) => (
-            <option key={unit.value} value={unit.value}>
-              {unit.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex min-w-0 flex-col gap-2">
+          <select
+            value={fromUnit}
+            onChange={(event) => setFromUnit(event.target.value)}
+            className="min-w-0 rounded-2xl border border-neutral-800 bg-neutral-900 px-3 py-3 text-sm text-neutral-100"
+          >
+            {units.map((unit) => (
+              <option key={unit.value} value={unit.value}>
+                {unit.label}
+              </option>
+            ))}
+          </select>
+          <UnitScreen code={fromUnit.toUpperCase()} value={inputValue} />
+        </div>
 
-      <Display value={Number.isNaN(result) ? "Erro" : String(result)} />
-    </div>
+        <div className="flex min-w-0 flex-col gap-2">
+          <select
+            value={toUnit}
+            onChange={(event) => setToUnit(event.target.value)}
+            className="min-w-0 rounded-2xl border border-neutral-800 bg-neutral-900 px-3 py-3 text-sm text-neutral-100"
+          >
+            {units.map((unit) => (
+              <option key={unit.value} value={unit.value}>
+                {unit.label}
+              </option>
+            ))}
+          </select>
+          <UnitScreen
+            code={toUnit.toUpperCase()}
+            value={Number.isNaN(result) ? "Erro" : String(result)}
+          />
+        </div>
+      </div>
+    </DeviceShell>
   );
 }

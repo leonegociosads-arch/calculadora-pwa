@@ -14,7 +14,7 @@ export default async function ConversorPage({ params }: ConversorPageProps) {
   if (categoria === "moeda") {
     return (
       <main className="mx-auto flex min-h-screen max-w-md flex-col gap-6 px-4 py-8">
-        <PageHeader title="Moeda" />
+        <PageHeader title="Moeda" backHref="/conversores" />
         <CurrencyConverter />
       </main>
     );
@@ -28,7 +28,7 @@ export default async function ConversorPage({ params }: ConversorPageProps) {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col gap-6 px-4 py-8">
-      <PageHeader title={converter.title} />
+      <PageHeader title={converter.title} backHref="/conversores" />
       <UnitConverter slug={converter.slug} />
     </main>
   );

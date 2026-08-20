@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Display } from "@/components/calculator/Display";
+import { UnitScreen } from "./UnitScreen";
+import { DeviceShell } from "@/components/ui/DeviceShell";
 import { currencyUnits } from "@/lib/converters/currency";
+import { sanitizeNumericInput } from "@/lib/sanitizeNumericInput";
 
 interface RatesApiResponse {
   base?: string;
@@ -37,54 +39,58 @@ export function CurrencyConverter() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <DeviceShell label="UTIL · CONV" sublabel="MULTI">
       <div className="flex flex-col gap-2">
-        <label className="text-sm text-neutral-500" htmlFor="currency-value">
+        <label className="text-sm text-neutral-400" htmlFor="currency-value">
           Valor
         </label>
         <input
           id="currency-value"
-          type="number"
+          type="text"
           inputMode="decimal"
           value={inputValue}
-          onChange={(event) => setInputValue(event.target.value)}
-          className="rounded-2xl border border-neutral-200 px-4 py-3 text-lg"
+          onChange={(event) => setInputValue(sanitizeNumericInput(event.target.value))}
+          className="rounded-2xl border border-neutral-800 bg-neutral-900 px-4 py-3 text-lg text-neutral-100"
         />
       </div>
 
-      <div className="flex items-center gap-3">
-        <select
-          value={fromCurrency}
-          onChange={(event) => setFromCurrency(event.target.value)}
-          className="flex-1 rounded-2xl border border-neutral-200 px-3 py-3 text-sm"
-        >
-          {currencyUnits.map((unit) => (
-            <option key={unit.value} value={unit.value}>
-              {unit.label}
-            </option>
-          ))}
-        </select>
-        <span className="text-neutral-400">→</span>
-        <select
-          value={toCurrency}
-          onChange={(event) => setToCurrency(event.target.value)}
-          className="flex-1 rounded-2xl border border-neutral-200 px-3 py-3 text-sm"
-        >
-          {currencyUnits.map((unit) => (
-            <option key={unit.value} value={unit.value}>
-              {unit.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex min-w-0 flex-col gap-2">
+          <select
+            value={fromCurrency}
+            onChange={(event) => setFromCurrency(event.target.value)}
+            className="min-w-0 rounded-2xl border border-neutral-800 bg-neutral-900 px-3 py-3 text-sm text-neutral-100"
+          >
+            {currencyUnits.map((unit) => (
+              <option key={unit.value} value={unit.value}>
+                {unit.label}
+              </option>
+            ))}
+          </select>
+          <UnitScreen code={fromCurrency} value={inputValue} />
+        </div>
 
-      {error ? (
-        <p className="text-sm text-red-600">{error}</p>
-      ) : !rates ? (
-        <p className="text-sm text-neutral-500">Carregando cotações...</p>
-      ) : (
-        <Display value={Number.isNaN(result) ? "Erro" : result.toFixed(2)} />
-      )}
-    </div>
+        <div className="flex min-w-0 flex-col gap-2">
+          <select
+            value={toCurrency}
+            onChange={(event) => setToCurrency(event.target.value)}
+            className="min-w-0 rounded-2xl border border-neutral-800 bg-neutral-900 px-3 py-3 text-sm text-neutral-100"
+          >
+            {currencyUnits.map((unit) => (
+              <option key={unit.value} value={unit.value}>
+                {unit.label}
+              </option>
+            ))}
+          </select>
+          {error ? (
+            <p className="text-xs text-red-400">{error}</p>
+          ) : !rates ? (
+            <p className="text-xs text-neutral-400">Carregando...</p>
+          ) : (
+            <UnitScreen code={toCurrency} value={result.toFixed(2)} />
+          )}
+        </div>
+      </div>
+    </DeviceShell>
   );
 }

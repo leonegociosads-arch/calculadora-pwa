@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { calculate, type Operator } from "@/lib/calculator";
 import { applyUnary, type UnaryFunction } from "@/lib/scientificCalculator";
 
@@ -11,12 +11,21 @@ interface CalculatorState {
   overwrite: boolean;
 }
 
+export interface HistoryEntry {
+  id: string;
+  expression: string;
+  result: string;
+}
+
 const initialState: CalculatorState = {
   displayValue: "0",
   previousValue: null,
   operator: null,
   overwrite: true,
 };
+
+const HISTORY_KEY = "calculator-history";
+const HISTORY_LIMIT = 20;
 
 function parseDisplay(value: string): number {
   return Number(value);
@@ -29,8 +38,38 @@ function formatResult(value: number): string {
   return String(value);
 }
 
+function createId(): string {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
 export function useCalculator() {
   const [state, setState] = useState<CalculatorState>(initialState);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(HISTORY_KEY);
+      if (saved) {
+        setHistory(JSON.parse(saved));
+      }
+    } catch {
+      // localStorage indisponível (ex: navegação privada) — segue sem histórico salvo
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    } catch {
+      // localStorage indisponível (ex: navegação privada) — ignora
+    }
+  }, [history]);
+
+  function pushHistory(expression: string, result: string) {
+    setHistory((prev) =>
+      [{ id: createId(), expression, result }, ...prev].slice(0, HISTORY_LIMIT),
+    );
+  }
 
   function inputDigit(digit: string) {
     setState((prev) => {
@@ -79,18 +118,18 @@ export function useCalculator() {
   }
 
   function handleEquals() {
-    setState((prev) => {
-      if (prev.operator === null || prev.previousValue === null) {
-        return prev;
-      }
-      const currentValue = parseDisplay(prev.displayValue);
-      const result = calculate(prev.previousValue, currentValue, prev.operator);
-      return {
-        displayValue: formatResult(result),
-        previousValue: null,
-        operator: null,
-        overwrite: true,
-      };
+    if (state.operator === null || state.previousValue === null) {
+      return;
+    }
+    const currentValue = parseDisplay(state.displayValue);
+    const result = calculate(state.previousValue, currentValue, state.operator);
+    const formatted = formatResult(result);
+    pushHistory(`${state.previousValue} ${state.operator} ${currentValue}`, formatted);
+    setState({
+      displayValue: formatted,
+      previousValue: null,
+      operator: null,
+      overwrite: true,
     });
   }
 
@@ -99,19 +138,24 @@ export function useCalculator() {
   }
 
   function applyFunction(fn: UnaryFunction) {
-    setState((prev) => {
-      const currentValue = parseDisplay(prev.displayValue);
-      const result = applyUnary(currentValue, fn);
-      return { ...prev, displayValue: formatResult(result), overwrite: true };
-    });
+    const currentValue = parseDisplay(state.displayValue);
+    const result = applyUnary(currentValue, fn);
+    const formatted = formatResult(result);
+    pushHistory(`${fn}(${currentValue})`, formatted);
+    setState({ ...state, displayValue: formatted, overwrite: true });
   }
 
   function insertPi() {
     setState((prev) => ({ ...prev, displayValue: formatResult(Math.PI), overwrite: true }));
   }
 
+  function clearHistory() {
+    setHistory([]);
+  }
+
   return {
     displayValue: state.displayValue,
+    history,
     inputDigit,
     inputDecimal,
     chooseOperator,
@@ -119,5 +163,6 @@ export function useCalculator() {
     clear,
     applyFunction,
     insertPi,
+    clearHistory,
   };
 }
