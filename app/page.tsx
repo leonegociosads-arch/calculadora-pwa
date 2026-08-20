@@ -1,25 +1,11 @@
-import { Calculator, Sigma, ArrowLeftRight } from "lucide-react";
-import { FeatureCard } from "@/components/home/FeatureCard";
+import { Calculator, Sigma, ArrowLeftRight, Music } from "lucide-react";
+import { AppTile } from "@/components/home/AppTile";
 
 const features = [
-  {
-    title: "Calculadora",
-    description: "Operações básicas do dia a dia",
-    href: "/calculadora",
-    icon: Calculator,
-  },
-  {
-    title: "Calculadora Científica",
-    description: "Funções avançadas e trigonométricas",
-    href: "/calculadora-cientifica",
-    icon: Sigma,
-  },
-  {
-    title: "Conversores",
-    description: "Unidades, moedas e mais",
-    href: "/conversores",
-    icon: ArrowLeftRight,
-  },
+  { title: "Calculadora", href: "/calculadora", icon: Calculator },
+  { title: "Calculadora Científica", href: "/calculadora-cientifica", icon: Sigma },
+  { title: "Conversores", href: "/conversores", icon: ArrowLeftRight },
+  { title: "BPM", href: "/bpm", icon: Music },
 ];
 
 export default function Home() {
@@ -31,9 +17,9 @@ export default function Home() {
           Escolha uma ferramenta para começar
         </p>
       </header>
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         {features.map((feature) => (
-          <FeatureCard key={feature.href} {...feature} />
+          <AppTile key={feature.href} {...feature} />
         ))}
       </div>
     </main>
