@@ -2,8 +2,22 @@
 
 import { useCallback, useRef, useState } from "react";
 
-const MAX_TAPS = 8;
+const MAX_TAPS = 20;
 const RESET_TIMEOUT_MS = 2000;
+const OUTLIER_TOLERANCE = 0.2;
+
+function median(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+}
+
+function averageWithoutOutliers(intervals: number[]): number {
+  const med = median(intervals);
+  const consistent = intervals.filter((interval) => Math.abs(interval - med) <= med * OUTLIER_TOLERANCE);
+  const values = consistent.length > 0 ? consistent : intervals;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
 
 export function useBpmCounter() {
   const [bpm, setBpm] = useState<number | null>(null);
@@ -38,7 +52,7 @@ export function useBpmCounter() {
     if (tapTimestamps.current.length >= 2) {
       const timestamps = tapTimestamps.current;
       const intervals = timestamps.slice(1).map((timestamp, index) => timestamp - timestamps[index]);
-      const avgInterval = intervals.reduce((sum, value) => sum + value, 0) / intervals.length;
+      const avgInterval = averageWithoutOutliers(intervals);
       setBpm(Math.round(60000 / avgInterval));
     }
 
