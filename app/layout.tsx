@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 import { InstallTutorialModal } from "@/components/pwa/InstallTutorialModal";
+import { ShareButton } from "@/components/ui/ShareButton";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {children}
         <ServiceWorkerRegister />
         <InstallTutorialModal />
+        <ShareButton />
       </body>
     </html>
   );
