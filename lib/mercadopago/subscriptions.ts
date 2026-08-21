@@ -73,3 +73,14 @@ export async function getSubscription(id: string) {
   const preApproval = new PreApproval(client);
   return preApproval.get({ id });
 }
+
+/**
+ * Cancela a assinatura no Mercado Pago — para as cobranças futuras
+ * imediatamente. O acesso Premium em si continua até o fim do período já
+ * pago (isso é decidido no nosso lado, em getUserPlan()).
+ */
+export async function cancelSubscription(id: string) {
+  const client = createMercadoPagoClient();
+  const preApproval = new PreApproval(client);
+  return preApproval.update({ id, body: { status: "cancelled" } });
+}

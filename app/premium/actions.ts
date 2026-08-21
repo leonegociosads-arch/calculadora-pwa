@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/isConfigured";
 import { isMercadoPagoConfigured } from "@/lib/mercadopago/isConfigured";
-import { createSubscription } from "@/lib/mercadopago/subscriptions";
+import { createSubscription, cancelSubscription } from "@/lib/mercadopago/subscriptions";
 import { getOrigin } from "@/lib/getOrigin";
 
 const GENERIC_ERROR_MESSAGE =
@@ -85,4 +85,57 @@ export async function subscribeToPremium() {
   }
 
   redirect(subscription.initPoint);
+}
+
+export async function cancelPremiumSubscription() {
+  if (!isSupabaseConfigured() || !isMercadoPagoConfigured()) {
+    redirect(`/conta?error=${encodeURIComponent("Cancelamento indisponível neste ambiente.")}`);
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const admin = createAdminClient();
+  const { data: subscription, error: fetchError } = await admin
+    .from("subscriptions")
+    .select("mercadopago_preapproval_id, status")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (fetchError || !subscription?.mercadopago_preapproval_id) {
+    redirect(`/conta?error=${encodeURIComponent("Nenhuma assinatura encontrada para cancelar.")}`);
+  }
+
+  if (subscription.status !== "authorized") {
+    redirect(`/conta?error=${encodeURIComponent("Essa assinatura já não está ativa.")}`);
+  }
+
+  try {
+    await cancelSubscription(subscription.mercadopago_preapproval_id);
+  } catch (error) {
+    console.error("Falha ao cancelar assinatura no Mercado Pago:", error);
+    redirect(
+      `/conta?error=${encodeURIComponent("Não foi possível cancelar agora. Tente novamente.")}`,
+    );
+  }
+
+  // Atualiza localmente na hora (não precisa esperar o webhook) — o acesso
+  // Premium continua normalmente até current_period_end, graças à checagem
+  // em getUserPlan(). Isso só registra que a renovação foi cancelada.
+  const { error: updateError } = await admin
+    .from("subscriptions")
+    .update({ status: "cancelled" })
+    .eq("user_id", user.id);
+
+  if (updateError) {
+    console.error("Falha ao atualizar status local após cancelar:", updateError);
+  }
+
+  redirect("/conta?cancelado=1");
 }
