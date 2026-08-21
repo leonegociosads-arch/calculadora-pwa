@@ -69,6 +69,18 @@ export default async function CadastroPage({ searchParams }: CadastroPageProps) 
         >
           Criar conta
         </button>
+
+        <p className="text-center text-xs text-neutral-500">
+          Ao criar uma conta, você concorda com os{" "}
+          <Link href="/termos" className="text-blue-400 underline">
+            Termos de Uso
+          </Link>{" "}
+          e a{" "}
+          <Link href="/privacidade" className="text-blue-400 underline">
+            Política de Privacidade
+          </Link>
+          .
+        </p>
       </form>
 
       <p className="text-center text-sm text-neutral-400">

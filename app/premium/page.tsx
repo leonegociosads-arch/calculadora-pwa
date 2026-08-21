@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getUserPlan } from "@/lib/supabase/profile";
 import { subscribeToPremium } from "./actions";
@@ -102,6 +103,17 @@ export default async function PremiumPage({ searchParams }: PremiumPageProps) {
             <p className="text-center text-xs text-neutral-500">
               Assinatura mensal recorrente via Mercado Pago — a cobrança se repete
               automaticamente todo mês. Você pode cancelar quando quiser, sem multa.
+            </p>
+            <p className="text-center text-xs text-neutral-500">
+              Ao assinar, você concorda com os{" "}
+              <Link href="/termos" className="text-blue-400 underline">
+                Termos de Uso
+              </Link>{" "}
+              e a{" "}
+              <Link href="/privacidade" className="text-blue-400 underline">
+                Política de Privacidade
+              </Link>
+              .
             </p>
           </form>
         </>
