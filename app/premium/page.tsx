@@ -15,7 +15,12 @@ const comparacao = [
   { recurso: "Calculadora Científica", free: false, premium: true },
 ];
 
-export default async function PremiumPage() {
+interface PremiumPageProps {
+  searchParams: Promise<{ error?: string; retorno?: string }>;
+}
+
+export default async function PremiumPage({ searchParams }: PremiumPageProps) {
+  const { error, retorno } = await searchParams;
   const plan = await getUserPlan();
   const isPremium = plan === "premium";
 
@@ -27,6 +32,15 @@ export default async function PremiumPage() {
         <h2 className="text-2xl font-bold text-neutral-100">Calculex Premium</h2>
         <p className="text-sm text-neutral-400">Desbloqueie todos os recursos avançados</p>
       </div>
+
+      {error ? <p className="text-center text-sm text-red-400">{error}</p> : null}
+
+      {!isPremium && retorno ? (
+        <p className="rounded-2xl border border-blue-800 bg-blue-950/30 p-4 text-center text-sm text-blue-300">
+          Estamos confirmando seu pagamento — isso pode levar alguns instantes. Recarregue
+          a página daqui a pouco.
+        </p>
+      ) : null}
 
       {isPremium ? (
         <div className="flex flex-col items-center gap-2 rounded-2xl border border-emerald-800 bg-emerald-950/40 p-6 text-center">

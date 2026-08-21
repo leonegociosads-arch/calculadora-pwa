@@ -1,26 +1,15 @@
 "use server";
 
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/isConfigured";
 import { EMAIL_REGEX, translateAuthError } from "@/lib/supabase/authErrorMessages";
+import { getOrigin } from "@/lib/getOrigin";
 
 const NOT_CONFIGURED_MESSAGE =
   "Login ainda não configurado neste ambiente (faltam as chaves do Supabase).";
 const INVALID_EMAIL_MESSAGE = "Esse e-mail não parece válido. Confira e tente de novo.";
-
-async function getOrigin(): Promise<string> {
-  const headersList = await headers();
-  const origin = headersList.get("origin");
-  if (origin) {
-    return origin;
-  }
-  const host = headersList.get("host") ?? "localhost:3000";
-  const protocol = host.startsWith("localhost") ? "http" : "https";
-  return `${protocol}://${host}`;
-}
 
 export async function login(formData: FormData) {
   if (!isSupabaseConfigured()) {
