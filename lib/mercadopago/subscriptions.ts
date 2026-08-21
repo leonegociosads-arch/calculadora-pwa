@@ -2,7 +2,7 @@ import "server-only";
 import { PreApproval } from "mercadopago";
 import { createMercadoPagoClient } from "./client";
 
-const PREMIUM_PRICE_BRL = 9.9;
+export const PREMIUM_PRICE_BRL = 499.99;
 const PLAN_REASON = "Calculex Premium (mensal)";
 
 interface CreateSubscriptionParams {

@@ -17,6 +17,10 @@ export const viewport: Viewport = {
   themeColor: "#0a0a0a",
 };
 
+// Garante que nenhuma página fique presa em cache (Vercel, navegador) —
+// sempre busca o estado mais recente (plano, sessão, etc.) do servidor.
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="pt-BR">

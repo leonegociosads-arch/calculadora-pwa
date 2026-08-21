@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getUserPlan } from "@/lib/supabase/profile";
+import { PREMIUM_PRICE_BRL } from "@/lib/mercadopago/subscriptions";
 import { subscribeToPremium } from "./actions";
+
+const precoFormatado = PREMIUM_PRICE_BRL.toLocaleString("pt-BR", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 const beneficios = [
   "Calculadora Científica completa (trigonometria, log, potência e mais)",
@@ -54,7 +60,7 @@ export default async function PremiumPage({ searchParams }: PremiumPageProps) {
         <>
           <div className="flex flex-col items-center gap-1 rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-center">
             <span className="text-4xl font-bold text-neutral-100">
-              R$ 9,90
+              R$ {precoFormatado}
               <span className="text-base font-normal text-neutral-400">/mês</span>
             </span>
             <span className="text-xs text-neutral-500">Cobrança recorrente, cancele quando quiser</span>
