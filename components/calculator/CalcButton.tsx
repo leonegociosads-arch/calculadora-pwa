@@ -4,8 +4,8 @@ export type CalcButtonVariant =
   | "action"
   | "equals"
   | "function"
-  | "op-green"
-  | "op-pink"
+  | "op-teal"
+  | "op-purple"
   | "op-red";
 
 interface CalcButtonProps {
@@ -17,14 +17,19 @@ interface CalcButtonProps {
 }
 
 const variantStyles: Record<CalcButtonVariant, string> = {
-  number: "bg-neutral-800 text-neutral-100 hover:bg-neutral-700",
-  operator: "bg-neutral-700 text-neutral-100 hover:bg-neutral-600",
-  action: "bg-neutral-600 text-neutral-100 hover:bg-neutral-500",
-  equals: "bg-blue-600 text-white hover:bg-blue-500",
-  function: "bg-neutral-800 text-blue-300 hover:bg-neutral-700",
-  "op-green": "bg-emerald-600 text-white hover:bg-emerald-500",
-  "op-pink": "bg-fuchsia-600 text-white hover:bg-fuchsia-500",
-  "op-red": "bg-red-600 text-white hover:bg-red-500",
+  number: "border border-neutral-700/50 bg-neutral-800/80 text-neutral-100 hover:bg-neutral-700",
+  operator: "border border-blue-900/40 bg-neutral-800/80 text-blue-400 hover:bg-neutral-700",
+  action:
+    "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:from-blue-500 hover:to-blue-400",
+  equals:
+    "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:from-blue-500 hover:to-blue-400",
+  function: "border border-blue-900/40 bg-neutral-800/80 text-blue-300 hover:bg-neutral-700",
+  "op-teal":
+    "bg-gradient-to-br from-teal-500 to-cyan-600 text-white shadow-[0_0_15px_rgba(20,184,166,0.35)] hover:from-teal-400 hover:to-cyan-500",
+  "op-purple":
+    "bg-gradient-to-br from-purple-600 to-violet-700 text-white shadow-[0_0_15px_rgba(147,51,234,0.35)] hover:from-purple-500 hover:to-violet-600",
+  "op-red":
+    "bg-gradient-to-br from-red-600 to-rose-700 text-white shadow-[0_0_15px_rgba(220,38,38,0.35)] hover:from-red-500 hover:to-rose-600",
 };
 
 const sizeStyles: Record<NonNullable<CalcButtonProps["size"]>, string> = {
@@ -43,7 +48,7 @@ export function CalcButton({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-2xl font-medium shadow-sm transition active:scale-95 ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
+      className={`rounded-2xl font-medium transition active:scale-95 ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
     >
       {label}
     </button>

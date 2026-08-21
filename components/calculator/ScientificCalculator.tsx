@@ -1,5 +1,6 @@
 "use client";
 
+import { Sigma } from "lucide-react";
 import { Display } from "./Display";
 import { Keypad } from "./Keypad";
 import { ScientificKeypad } from "./ScientificKeypad";
@@ -23,7 +24,7 @@ export function ScientificCalculator() {
 
   return (
     <div className="flex flex-col gap-4">
-      <DeviceShell label="UTIL · CALC SCI" sublabel="AVANÇADA">
+      <DeviceShell icon={Sigma} label="UTIL · CALC SCI" sublabel="AVANÇADA">
         <Display value={displayValue} />
         <ScientificKeypad
           onFunction={applyFunction}
@@ -36,8 +37,8 @@ export function ScientificCalculator() {
           onOperator={chooseOperator}
           onEquals={handleEquals}
           onClear={clear}
-          operatorVariants={{ "×": "op-pink", "÷": "op-red", "+": "op-green" }}
-          clearVariant="op-red"
+          operatorVariants={{ "×": "op-teal", "-": "op-purple", "+": "op-red" }}
+          clearVariant="action"
         />
       </DeviceShell>
       <HistoryPanel history={history} onClear={clearHistory} />

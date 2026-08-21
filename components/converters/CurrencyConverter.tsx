@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ArrowLeftRight, Coins } from "lucide-react";
 import { UnitScreen } from "./UnitScreen";
 import { DeviceShell } from "@/components/ui/DeviceShell";
 import { currencyUnits } from "@/lib/converters/currency";
@@ -38,8 +39,13 @@ export function CurrencyConverter() {
     result = (numericValue / rates[fromCurrency]) * rates[toCurrency];
   }
 
+  function swapCurrencies() {
+    setFromCurrency(toCurrency);
+    setToCurrency(fromCurrency);
+  }
+
   return (
-    <DeviceShell label="UTIL · CONV" sublabel="MULTI">
+    <DeviceShell icon={Coins} label="UTIL · CONV" sublabel="MULTI">
       <div className="flex flex-col gap-2">
         <label className="text-sm text-neutral-400" htmlFor="currency-value">
           Valor
@@ -50,16 +56,20 @@ export function CurrencyConverter() {
           inputMode="decimal"
           value={inputValue}
           onChange={(event) => setInputValue(sanitizeNumericInput(event.target.value))}
-          className="rounded-2xl border border-neutral-800 bg-neutral-900 px-4 py-3 text-lg text-neutral-100"
+          className="rounded-2xl border border-neutral-800 bg-neutral-900/80 px-4 py-3 text-lg text-neutral-100"
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="flex min-w-0 flex-col gap-2">
+      <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-2 gap-3 text-xs font-medium uppercase tracking-wide text-neutral-500">
+          <span>De</span>
+          <span>Para</span>
+        </div>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
           <select
             value={fromCurrency}
             onChange={(event) => setFromCurrency(event.target.value)}
-            className="min-w-0 rounded-2xl border border-neutral-800 bg-neutral-900 px-3 py-3 text-sm text-neutral-100"
+            className="min-w-0 rounded-2xl border border-neutral-800 bg-neutral-900/80 px-3 py-3 text-sm text-neutral-100"
           >
             {currencyUnits.map((unit) => (
               <option key={unit.value} value={unit.value}>
@@ -67,14 +77,18 @@ export function CurrencyConverter() {
               </option>
             ))}
           </select>
-          <UnitScreen code={fromCurrency} value={inputValue} />
-        </div>
-
-        <div className="flex min-w-0 flex-col gap-2">
+          <button
+            type="button"
+            onClick={swapCurrencies}
+            aria-label="Trocar moedas"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-blue-500/40 bg-blue-500/10 text-blue-400 transition hover:bg-blue-500/20"
+          >
+            <ArrowLeftRight size={16} />
+          </button>
           <select
             value={toCurrency}
             onChange={(event) => setToCurrency(event.target.value)}
-            className="min-w-0 rounded-2xl border border-neutral-800 bg-neutral-900 px-3 py-3 text-sm text-neutral-100"
+            className="min-w-0 rounded-2xl border border-neutral-800 bg-neutral-900/80 px-3 py-3 text-sm text-neutral-100"
           >
             {currencyUnits.map((unit) => (
               <option key={unit.value} value={unit.value}>
@@ -82,14 +96,18 @@ export function CurrencyConverter() {
               </option>
             ))}
           </select>
-          {error ? (
-            <p className="text-xs text-red-400">{error}</p>
-          ) : !rates ? (
-            <p className="text-xs text-neutral-400">Carregando...</p>
-          ) : (
-            <UnitScreen code={toCurrency} value={result.toFixed(2)} />
-          )}
         </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <UnitScreen code={fromCurrency} value={inputValue} />
+        {error ? (
+          <p className="flex items-center text-xs text-red-400">{error}</p>
+        ) : !rates ? (
+          <p className="flex items-center text-xs text-neutral-400">Carregando...</p>
+        ) : (
+          <UnitScreen code={toCurrency} value={result.toFixed(2)} />
+        )}
       </div>
     </DeviceShell>
   );

@@ -1,13 +1,19 @@
 interface DisplayProps {
   value: string;
+  suffix?: string;
 }
 
-export function Display({ value }: DisplayProps) {
+export function Display({ value, suffix }: DisplayProps) {
   return (
-    <div className="flex min-h-20 items-end justify-end rounded-xl border-2 border-neutral-950 bg-[#c9d6c1] px-4 py-3 shadow-inner">
-      <span className="truncate font-mono text-3xl font-semibold text-[#1f2a17] sm:text-4xl">
+    <div className="flex min-h-20 flex-col items-end justify-end gap-1 rounded-2xl border border-neutral-800 bg-neutral-900/80 px-4 py-3">
+      <span className="truncate font-mono text-3xl font-semibold text-neutral-50 sm:text-4xl">
         {value}
       </span>
+      {suffix ? (
+        <span className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+          {suffix}
+        </span>
+      ) : null}
     </div>
   );
 }

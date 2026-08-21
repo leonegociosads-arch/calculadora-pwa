@@ -1,5 +1,6 @@
 "use client";
 
+import { Calculator as CalculatorIcon } from "lucide-react";
 import { Display } from "./Display";
 import { Keypad } from "./Keypad";
 import { HistoryPanel } from "./HistoryPanel";
@@ -20,7 +21,7 @@ export function Calculator() {
 
   return (
     <div className="flex flex-col gap-4">
-      <DeviceShell label="UTIL · CALC" sublabel="12 DÍGITOS" showSolarStrip>
+      <DeviceShell icon={CalculatorIcon} label="UTIL · CALC" sublabel="12 DÍGITOS">
         <Display value={displayValue} />
         <Keypad
           onDigit={inputDigit}
@@ -28,8 +29,8 @@ export function Calculator() {
           onOperator={chooseOperator}
           onEquals={handleEquals}
           onClear={clear}
-          operatorVariants={{ "×": "op-green", "-": "op-pink", "+": "op-red" }}
-          clearVariant="equals"
+          operatorVariants={{ "×": "op-teal", "-": "op-purple", "+": "op-red" }}
+          clearVariant="action"
         />
       </DeviceShell>
       <HistoryPanel history={history} onClear={clearHistory} />
