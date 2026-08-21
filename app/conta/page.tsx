@@ -21,13 +21,6 @@ export default async function ContaPage() {
 
   const plan = await getUserPlan();
 
-  // Diagnóstico temporário — remover depois de resolver o problema do plano.
-  const { data: debugRow, error: debugError } = await supabase
-    .from("profiles")
-    .select("id, plan")
-    .eq("id", user.id)
-    .maybeSingle();
-
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col gap-6 px-4 py-8">
       <PageHeader title="Minha conta" />
@@ -51,13 +44,6 @@ export default async function ContaPage() {
             {plan === "premium" ? "Premium ✨" : "Free"}
           </span>
         </div>
-      </div>
-
-      <div className="flex flex-col gap-1 rounded-2xl border border-amber-800 bg-amber-950/30 p-4 text-xs text-amber-200">
-        <span className="font-semibold">Diagnóstico temporário (remover depois)</span>
-        <span>seu id de usuário: {user.id}</span>
-        <span>linha encontrada em &quot;profiles&quot;: {JSON.stringify(debugRow)}</span>
-        <span>erro da consulta: {debugError ? JSON.stringify(debugError) : "nenhum"}</span>
       </div>
 
       <PremiumGate title="Área de teste Premium">
