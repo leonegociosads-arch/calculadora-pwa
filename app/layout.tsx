@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
+import { InstallTutorialModal } from "@/components/pwa/InstallTutorialModal";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="bg-neutral-950 text-neutral-100 antialiased">
         {children}
         <ServiceWorkerRegister />
+        <InstallTutorialModal />
       </body>
     </html>
   );
