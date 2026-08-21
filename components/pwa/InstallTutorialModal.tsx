@@ -1,15 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "calculex-pwa-tutorial-shown";
 
-type Platform = "ios" | "android";
+type Platform = "ios" | "android" | "other";
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
 
 export function InstallTutorialModal() {
   const [visible, setVisible] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
-  const [platform, setPlatform] = useState<Platform>("android");
+  const [platform, setPlatform] = useState<Platform>("other");
+  const [canPromptInstall, setCanPromptInstall] = useState(false);
+  const deferredPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
+
+  // No Android, o Chrome avisa quando o app pode ser instalado de verdade
+  // com um toque só — capturamos esse evento pra usar em vez de só mostrar
+  // instruções manuais (isso não existe no iOS, só funciona no Android).
+  useEffect(() => {
+    function handleBeforeInstallPrompt(event: Event) {
+      event.preventDefault();
+      deferredPromptRef.current = event as BeforeInstallPromptEvent;
+      setCanPromptInstall(true);
+    }
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    };
+  }, []);
 
   useEffect(() => {
     let alreadyShown = true;
@@ -56,9 +79,25 @@ export function InstallTutorialModal() {
     setVisible(false);
   }
 
+  async function installNow() {
+    const deferredPrompt = deferredPromptRef.current;
+    if (!deferredPrompt) {
+      setShowSteps(true);
+      return;
+    }
+
+    await deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPromptRef.current = null;
+    setCanPromptInstall(false);
+    dismiss();
+  }
+
   if (!visible) {
     return null;
   }
+
+  const canOneTapInstall = platform === "android" && canPromptInstall;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 px-4 pb-6 sm:items-center">
@@ -77,10 +116,10 @@ export function InstallTutorialModal() {
             <div className="flex flex-col gap-2">
               <button
                 type="button"
-                onClick={() => setShowSteps(true)}
+                onClick={canOneTapInstall ? installNow : () => setShowSteps(true)}
                 className="h-11 rounded-2xl bg-blue-600 text-sm font-semibold text-white transition hover:bg-blue-500"
               >
-                Ver como instalar
+                {canOneTapInstall ? "Instalar agora" : "Ver como instalar"}
               </button>
               <button
                 type="button"
@@ -103,8 +142,11 @@ export function InstallTutorialModal() {
                 </>
               ) : (
                 <>
-                  <li>1. Toque no menu (⋮) no canto superior direito do navegador.</li>
-                  <li>2. Toque em &quot;Instalar aplicativo&quot; ou &quot;Adicionar à tela inicial&quot;.</li>
+                  <li>1. Toque no menu (⋮) no canto superior direito do Chrome.</li>
+                  <li>
+                    2. Toque em &quot;Instalar aplicativo&quot; (ou &quot;Adicionar à tela
+                    inicial&quot;, dependendo da versão).
+                  </li>
                   <li>3. Confirme tocando em &quot;Instalar&quot;.</li>
                 </>
               )}
