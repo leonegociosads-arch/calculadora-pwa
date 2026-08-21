@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { Calculator, Sigma, ArrowLeftRight, Music } from "lucide-react";
 import { AppTile } from "@/components/home/AppTile";
 import { AuthStatus } from "@/components/auth/AuthStatus";
+import { getUserPlan } from "@/lib/supabase/profile";
 
 const features = [
   { title: "Calculadora", href: "/calculadora", icon: Calculator },
@@ -9,7 +11,9 @@ const features = [
   { title: "BPM", href: "/bpm", icon: Music },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const plan = await getUserPlan();
+
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col gap-6 px-4 py-8">
       <header className="flex flex-wrap items-start justify-between gap-3">
@@ -26,6 +30,14 @@ export default function Home() {
           <AppTile key={feature.href} {...feature} />
         ))}
       </div>
+      {plan !== "premium" ? (
+        <Link
+          href="/premium"
+          className="flex h-12 items-center justify-center rounded-2xl bg-blue-600 text-base font-semibold text-white transition hover:bg-blue-500"
+        >
+          Assinar Premium
+        </Link>
+      ) : null}
     </main>
   );
 }
