@@ -29,11 +29,18 @@ export async function AuthStatus() {
   }
 
   return (
-    <form action={logout} className="flex h-11 shrink-0 items-center gap-2">
-      <span className="max-w-24 truncate text-sm text-neutral-400">{user.email}</span>
-      <button type="submit" className={buttonClasses}>
-        Sair
-      </button>
-    </form>
+    <div className="flex h-11 shrink-0 items-center gap-2">
+      <Link
+        href="/conta"
+        className="max-w-24 truncate text-sm text-neutral-400 underline-offset-2 hover:text-neutral-200 hover:underline"
+      >
+        {user.email}
+      </Link>
+      <form action={logout}>
+        <button type="submit" className={buttonClasses}>
+          Sair
+        </button>
+      </form>
+    </div>
   );
 }
